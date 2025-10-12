@@ -51,7 +51,7 @@ const TeacherDashboard = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/settings")}>
                 <Settings className="w-5 h-5" />
               </Button>
               <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
@@ -120,15 +120,15 @@ const TeacherDashboard = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4 mb-8">
-          <Button variant="hero" className="gap-2">
+          <Button variant="hero" className="gap-2" onClick={() => navigate("/teacher/upload")}>
             <Plus className="w-5 h-5" />
             Create New Class
           </Button>
-          <Button variant="secondary" className="gap-2">
+          <Button variant="secondary" className="gap-2" onClick={() => navigate("/teacher/upload")}>
             <Upload className="w-5 h-5" />
             Upload Resource
           </Button>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/teacher/analytics")}>
             <BarChart3 className="w-5 h-5" />
             View Analytics
           </Button>
@@ -183,10 +183,19 @@ const TeacherDashboard = () => {
                     </div>
 
                     <div className="flex gap-2 pt-2">
-                      <Button size="sm" variant="outline" className="flex-1">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1"
+                        onClick={() => navigate(`/teacher/class/${classItem.id}`)}
+                      >
                         View Details
                       </Button>
-                      <Button size="sm" className="flex-1">
+                      <Button 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => navigate(`/teacher/class/${classItem.id}`)}
+                      >
                         Manage
                       </Button>
                     </div>
@@ -196,7 +205,10 @@ const TeacherDashboard = () => {
             ))}
 
             {/* Add New Class Card */}
-            <Card className="shadow-card hover:shadow-soft transition-all cursor-pointer border-2 border-dashed border-primary/30 bg-primary/5 group">
+            <Card 
+              className="shadow-card hover:shadow-soft transition-all cursor-pointer border-2 border-dashed border-primary/30 bg-primary/5 group"
+              onClick={() => navigate("/teacher/upload")}
+            >
               <CardContent className="flex flex-col items-center justify-center h-full min-h-[250px] text-center">
                 <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Plus className="w-8 h-8 text-white" />

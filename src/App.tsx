@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import Classroom from "./pages/Classroom";
+import UploadResource from "./pages/UploadResource";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher/upload" element={<UploadResource />} />
           <Route path="/student/dashboard" element={<StudentDashboard />} />
           <Route path="/classroom/:classId" element={<Classroom />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
