@@ -59,7 +59,7 @@ const StudentDashboard = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/settings")}>
                 <Settings className="w-5 h-5" />
               </Button>
               <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
@@ -79,6 +79,22 @@ const StudentDashboard = () => {
           <p className="text-lg text-muted-foreground">
             Ready to continue your learning journey?
           </p>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          <Button variant="hero" className="gap-2" onClick={() => navigate("/student/join")}>
+            <PlayCircle className="w-5 h-5" />
+            Join New Class
+          </Button>
+          <Button variant="secondary" className="gap-2" onClick={() => navigate("/student/achievements")}>
+            <Award className="w-5 h-5" />
+            View Achievements
+          </Button>
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/student/profile")}>
+            <Settings className="w-5 h-5" />
+            My Profile
+          </Button>
         </div>
 
         {/* Stats Cards */}
