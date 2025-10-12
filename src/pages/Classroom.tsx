@@ -362,111 +362,111 @@ const Classroom = () => {
         </aside>
 
         {/* Main content area */}
-        <div className="flex-1 overflow-hidden flex">
-          <div className="flex-1 overflow-y-auto">
-            <div className="container mx-auto px-4 py-6 max-w-4xl">
-              {!showQuiz ? (
-                <Card className="shadow-card animate-fade-in">
-                  <CardContent className="p-8">
-                    <Badge className="mb-4">Chapter 1: Cell Biology</Badge>
-                    <h2 className="text-3xl font-bold text-foreground mb-4">
-                      {sections[currentSection].title}
-                    </h2>
+        <div className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-4 py-6 max-w-4xl">
+            {!showQuiz ? (
+              <Card className="shadow-card animate-fade-in">
+                <CardContent className="p-8">
+                  <Badge className="mb-4">Chapter 1: Cell Biology</Badge>
+                  <h2 className="text-3xl font-bold text-foreground mb-4">
+                    {sections[currentSection].title}
+                  </h2>
+                  
+                  <div className="prose prose-lg max-w-none space-y-6">
+                    <p className="text-muted-foreground leading-relaxed">
+                      The cell is the basic unit of life. Every living organism is made up of one or more cells. 
+                      Understanding cell structure is fundamental to biology.
+                    </p>
                     
-                    <div className="prose prose-lg max-w-none space-y-6">
-                      <p className="text-muted-foreground leading-relaxed">
-                        The cell is the basic unit of life. Every living organism is made up of one or more cells. 
-                        Understanding cell structure is fundamental to biology.
-                      </p>
-                      
-                      {/* Key Point Callout */}
-                      <div className="bg-primary/5 p-6 rounded-2xl border-l-4 border-primary">
-                        <div className="flex items-start gap-3">
-                          <Lightbulb className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                          <div>
-                            <h3 className="text-xl font-bold text-primary mb-2">Key Point</h3>
-                            <p className="text-foreground">
-                              The cell membrane is a selectively permeable barrier that separates the interior of the cell from the external environment. It maintains cellular homeostasis.
-                            </p>
-                          </div>
+                    {/* Key Point Callout */}
+                    <div className="bg-primary/5 p-6 rounded-2xl border-l-4 border-primary">
+                      <div className="flex items-start gap-3">
+                        <Lightbulb className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                        <div>
+                          <h3 className="text-xl font-bold text-primary mb-2">Key Point</h3>
+                          <p className="text-foreground">
+                            The cell membrane is a selectively permeable barrier that separates the interior of the cell from the external environment. It maintains cellular homeostasis.
+                          </p>
                         </div>
                       </div>
+                    </div>
 
-                      <p className="text-muted-foreground leading-relaxed">
-                        Inside the cell, you'll find various organelles, each with specific functions that work together to keep the cell alive and functioning:
-                      </p>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Inside the cell, you'll find various organelles, each with specific functions that work together to keep the cell alive and functioning:
+                    </p>
 
-                      {/* Organelles List */}
-                      <div className="space-y-3">
-                        {[
-                          { name: "Nucleus", desc: "Contains genetic material (DNA) and controls cell activities" },
-                          { name: "Mitochondria", desc: "Produces energy (ATP) through cellular respiration" },
-                          { name: "Ribosomes", desc: "Synthesize proteins from amino acids" },
-                          { name: "Endoplasmic Reticulum", desc: "Processes and transports proteins and lipids" }
-                        ].map((organelle, idx) => (
-                          <div key={idx} className="flex items-start gap-3 p-4 bg-muted/30 rounded-xl">
-                            <CheckCircle2 className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                            <div>
-                              <span className="font-semibold text-foreground">{organelle.name}:</span>
-                              <span className="text-muted-foreground"> {organelle.desc}</span>
-                            </div>
+                    {/* Organelles List */}
+                    <div className="space-y-3">
+                      {[
+                        { name: "Nucleus", desc: "Contains genetic material (DNA) and controls cell activities" },
+                        { name: "Mitochondria", desc: "Produces energy (ATP) through cellular respiration" },
+                        { name: "Ribosomes", desc: "Synthesize proteins from amino acids" },
+                        { name: "Endoplasmic Reticulum", desc: "Processes and transports proteins and lipids" }
+                      ].map((organelle, idx) => (
+                        <div key={idx} className="flex items-start gap-3 p-4 bg-muted/30 rounded-xl">
+                          <CheckCircle2 className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+                          <div>
+                            <span className="font-semibold text-foreground">{organelle.name}:</span>
+                            <span className="text-muted-foreground"> {organelle.desc}</span>
                           </div>
-                        ))}
-                      </div>
-
-                      {/* Video Placeholder */}
-                      <div className="bg-muted rounded-2xl p-8 text-center">
-                        <PlayCircle className="w-16 h-16 mx-auto mb-4 text-primary" />
-                        <p className="text-lg font-semibold text-foreground mb-2">Video: Cell Structure 3D Tour</p>
-                        <p className="text-sm text-muted-foreground">Interactive visualization coming soon</p>
-                      </div>
+                        </div>
+                      ))}
                     </div>
 
-                    {/* Navigation Buttons */}
-                    <div className="flex gap-4 mt-8 pt-6 border-t border-border">
-                      <Button 
-                        variant="outline" 
-                        disabled={currentSection === 0}
-                        onClick={() => setCurrentSection(currentSection - 1)}
-                      >
-                        <ArrowLeft className="w-5 h-5" />
-                        Previous
-                      </Button>
-                      <Button 
-                        variant="default"
-                        className="flex-1 gap-2"
-                        onClick={() => setShowQuiz(true)}
-                      >
-                        <Brain className="w-5 h-5" />
-                        Take Quiz
-                      </Button>
-                      <Button 
-                        variant="hero"
-                        disabled={currentSection === sections.length - 1}
-                        onClick={() => {
-                          setCurrentSection(currentSection + 1);
-                          setShowQuiz(sections[currentSection + 1].type === "quiz");
-                        }}
-                      >
-                        Next
-                        <ArrowRight className="w-5 h-5" />
-                      </Button>
+                    {/* Video Placeholder */}
+                    <div className="bg-muted rounded-2xl p-8 text-center">
+                      <PlayCircle className="w-16 h-16 mx-auto mb-4 text-primary" />
+                      <p className="text-lg font-semibold text-foreground mb-2">Video: Cell Structure 3D Tour</p>
+                      <p className="text-sm text-muted-foreground">Interactive visualization coming soon</p>
                     </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card className="shadow-card animate-fade-in">
-                  <CardContent className="p-8">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 bg-gradient-hero rounded-xl flex items-center justify-center">
-                        <Brain className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-foreground">Quick Quiz</h2>
-                        <p className="text-muted-foreground">Test your understanding</p>
-                      </div>
-                    </div>
+                  </div>
 
+                  {/* Navigation Buttons */}
+                  <div className="flex gap-4 mt-8 pt-6 border-t border-border">
+                    <Button 
+                      variant="outline" 
+                      disabled={currentSection === 0}
+                      onClick={() => setCurrentSection(currentSection - 1)}
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                      Previous
+                    </Button>
+                    <Button 
+                      variant="default"
+                      className="flex-1 gap-2"
+                      onClick={() => setShowQuiz(true)}
+                    >
+                      <Brain className="w-5 h-5" />
+                      Take Quiz
+                    </Button>
+                    <Button 
+                      variant="hero"
+                      disabled={currentSection === sections.length - 1}
+                      onClick={() => {
+                        setCurrentSection(currentSection + 1);
+                        setShowQuiz(sections[currentSection + 1].type === "quiz");
+                      }}
+                    >
+                      Next
+                      <ArrowRight className="w-5 h-5" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="shadow-card animate-fade-in h-[calc(100vh-200px)] flex flex-col">
+                <CardContent className="p-8 flex flex-col h-full">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-12 h-12 bg-gradient-hero rounded-xl flex items-center justify-center">
+                      <Brain className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-foreground">Quick Quiz</h2>
+                      <p className="text-muted-foreground">Test your understanding</p>
+                    </div>
+                  </div>
+
+                  <ScrollArea className="flex-1 pr-4">
                     <div className="space-y-6">
                       {quizQuestions.map((question, qIndex) => (
                         <div key={question.id} className="space-y-3 p-6 bg-muted/20 rounded-2xl">
@@ -537,161 +537,161 @@ const Classroom = () => {
                         </div>
                       ))}
                     </div>
+                  </ScrollArea>
 
-                    <div className="flex gap-4 mt-8 pt-6 border-t border-border">
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setShowQuiz(false)}
-                        disabled={quizSubmitted}
-                      >
-                        Cancel
-                      </Button>
-                      <Button 
-                        variant="hero"
-                        className="flex-1"
-                        onClick={handleQuizSubmit}
-                        disabled={Object.keys(quizAnswers).length !== quizQuestions.length || quizSubmitted}
-                      >
-                        {quizSubmitted ? "Checking..." : "Submit Quiz"}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </div>
-
-          {/* AI Agent Chat Panel */}
-          <div className="hidden lg:block w-96 border-l border-border bg-card">
-            <div className="h-full flex flex-col">
-              {/* Agent Header */}
-              <div className="p-4 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <img 
-                    src={aiAgentAvatar} 
-                    alt="AI Agent" 
-                    className="w-12 h-12 rounded-full shadow-soft animate-float"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-bold text-foreground">AI Tutor</h3>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-                      <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                      Always here to help
-                    </p>
-                  </div>
-                  <MessageCircle className="w-5 h-5 text-primary" />
-                </div>
-              </div>
-
-              {/* Messages */}
-              <ScrollArea className="flex-1 p-4">
-                <div className="space-y-4">
-                  {messages.map((message, index) => (
-                    <div 
-                      key={index}
-                      className={`flex gap-3 animate-slide-in ${
-                        message.role === "student" ? "flex-row-reverse" : ""
-                      }`}
+                  <div className="flex gap-4 mt-6 pt-6 border-t border-border">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowQuiz(false)}
+                      disabled={quizSubmitted}
                     >
-                      {message.role === "agent" && (
-                        <img 
-                          src={aiAgentAvatar} 
-                          alt="AI Agent" 
-                          className="w-8 h-8 rounded-full flex-shrink-0"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <div 
-                          className={`rounded-2xl px-4 py-3 ${
-                            message.role === "agent" 
-                              ? "bg-primary/10 text-foreground" 
-                              : "bg-gradient-hero text-white"
-                          }`}
-                        >
-                          <p className="text-sm leading-relaxed">{message.content}</p>
-                        </div>
-                        {message.role === "agent" && (
-                          <div className="flex items-center gap-2 mt-2 px-2">
-                            <button className="text-muted-foreground hover:text-foreground transition-colors">
-                              <ThumbsUp className="w-3.5 h-3.5" />
-                            </button>
-                            <button className="text-muted-foreground hover:text-foreground transition-colors">
-                              <ThumbsDown className="w-3.5 h-3.5" />
-                            </button>
-                            <span className="text-xs text-muted-foreground ml-auto">{message.timestamp}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {isTyping && (
-                    <div className="flex gap-3 animate-slide-in">
+                      Cancel
+                    </Button>
+                    <Button 
+                      variant="hero"
+                      className="flex-1"
+                      onClick={handleQuizSubmit}
+                      disabled={Object.keys(quizAnswers).length !== quizQuestions.length || quizSubmitted}
+                    >
+                      {quizSubmitted ? "Checking..." : "Submit Quiz"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+
+        {/* AI Agent Chat Panel */}
+        <div className="hidden lg:block w-96 border-l border-border bg-card h-[calc(100vh-73px)]">
+          <div className="h-full flex flex-col">
+            {/* Agent Header */}
+            <div className="p-4 border-b border-border flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <img 
+                  src={aiAgentAvatar} 
+                  alt="AI Agent" 
+                  className="w-12 h-12 rounded-full shadow-soft animate-float"
+                />
+                <div className="flex-1">
+                  <h3 className="font-bold text-foreground">AI Tutor</h3>
+                  <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                    <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                    Always here to help
+                  </p>
+                </div>
+                <MessageCircle className="w-5 h-5 text-primary" />
+              </div>
+            </div>
+
+            {/* Messages */}
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                {messages.map((message, index) => (
+                  <div 
+                    key={index}
+                    className={`flex gap-3 animate-slide-in ${
+                      message.role === "student" ? "flex-row-reverse" : ""
+                    }`}
+                  >
+                    {message.role === "agent" && (
                       <img 
                         src={aiAgentAvatar} 
                         alt="AI Agent" 
                         className="w-8 h-8 rounded-full flex-shrink-0"
                       />
-                      <div className="bg-primary/10 rounded-2xl px-4 py-3">
-                        <div className="flex gap-1.5">
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    )}
+                    <div className="flex-1">
+                      <div 
+                        className={`rounded-2xl px-4 py-3 ${
+                          message.role === "agent" 
+                            ? "bg-primary/10 text-foreground" 
+                            : "bg-gradient-hero text-white"
+                        }`}
+                      >
+                        <p className="text-sm leading-relaxed">{message.content}</p>
+                      </div>
+                      {message.role === "agent" && (
+                        <div className="flex items-center gap-2 mt-2 px-2">
+                          <button className="text-muted-foreground hover:text-foreground transition-colors">
+                            <ThumbsUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button className="text-muted-foreground hover:text-foreground transition-colors">
+                            <ThumbsDown className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="text-xs text-muted-foreground ml-auto">{message.timestamp}</span>
                         </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                
+                {isTyping && (
+                  <div className="flex gap-3 animate-slide-in">
+                    <img 
+                      src={aiAgentAvatar} 
+                      alt="AI Agent" 
+                      className="w-8 h-8 rounded-full flex-shrink-0"
+                    />
+                    <div className="bg-primary/10 rounded-2xl px-4 py-3">
+                      <div className="flex gap-1.5">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
                     </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-              </ScrollArea>
-
-              {/* Quick Questions */}
-              <div className="px-4 py-2 border-t border-border">
-                <p className="text-xs text-muted-foreground mb-2">Quick questions:</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {quickQuestions.map((q, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSendMessage(q)}
-                      className="text-xs px-3 py-1.5 bg-muted hover:bg-muted/70 rounded-full text-foreground transition-colors"
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
+            </ScrollArea>
 
-              {/* Input */}
-              <div className="p-4 border-t border-border">
-                <div className="flex gap-2">
-                  <Input
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                    placeholder="Ask a question..."
-                    className="rounded-xl"
-                  />
-                  <Button 
-                    variant="ghost"
-                    size="icon"
-                    className="flex-shrink-0"
+            {/* Quick Questions */}
+            <div className="px-4 py-2 border-t border-border flex-shrink-0">
+              <p className="text-xs text-muted-foreground mb-2">Quick questions:</p>
+              <div className="flex flex-wrap gap-1.5">
+                {quickQuestions.map((q, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSendMessage(q)}
+                    className="text-xs px-3 py-1.5 bg-muted hover:bg-muted/70 rounded-full text-foreground transition-colors"
                   >
-                    <Mic className="w-5 h-5" />
-                  </Button>
-                  <Button 
-                    onClick={() => handleSendMessage()}
-                    size="icon"
-                    disabled={!inputMessage.trim()}
-                    className="flex-shrink-0"
-                  >
-                    <Send className="w-5 h-5" />
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  <Sparkles className="w-3 h-3 inline mr-1" />
-                  Ask me anything about this topic!
-                </p>
+                    {q}
+                  </button>
+                ))}
               </div>
+            </div>
+
+            {/* Input */}
+            <div className="p-4 border-t border-border flex-shrink-0">
+              <div className="flex gap-2">
+                <Input
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                  placeholder="Ask a question..."
+                  className="rounded-xl"
+                />
+                <Button 
+                  variant="ghost"
+                  size="icon"
+                  className="flex-shrink-0"
+                >
+                  <Mic className="w-5 h-5" />
+                </Button>
+                <Button 
+                  onClick={() => handleSendMessage()}
+                  size="icon"
+                  disabled={!inputMessage.trim()}
+                  className="flex-shrink-0"
+                >
+                  <Send className="w-5 h-5" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                <Sparkles className="w-3 h-3 inline mr-1" />
+                Ask me anything about this topic!
+              </p>
             </div>
           </div>
         </div>
