@@ -1,0 +1,30 @@
+# Dependencies
+node_modules
+
+# Environment
+.env
+.env.local
+
+# Build
+dist
+build
+
+# Uploads
+uploads
+
+# Database
+drizzle
+
+# Logs
+*.log
+logs
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
