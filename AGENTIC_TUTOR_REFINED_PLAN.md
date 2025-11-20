@@ -730,66 +730,72 @@ ORCHESTRATOR: [Decision: Student now understands, proceed with confidence]
 
 ---
 
-## Open Questions for Discussion
+## Design Decisions (Finalized)
 
-### 1. **Pacing Control**
-   **Question**: Should students be able to say "slow down" or "speed up",
-                 or should the agent detect this automatically?
+### 1. **Pacing Control** ✅
+   **Decision**: **Auto-detect**
 
-   **Options**:
-   - A) Fully automatic detection (agent analyzes response times, errors)
-   - B) Student can explicitly request pacing changes
-   - C) Both automatic + explicit controls
+   The Orchestrator Agent will automatically detect pacing needs by analyzing:
+   - Response time patterns (slow responses → may need more time)
+   - Error frequency (multiple errors → slow down)
+   - Question complexity (deep questions → student engaged, can maintain pace)
+   - Session duration (long session → suggest break)
 
-   **Recommendation**: Option C - Automatic detection with manual override
-
----
-
-### 2. **Web Search Scope**
-   **Question**: What level of external knowledge should we allow?
-
-   **Options**:
-   - A) Only when PDF lacks information
-   - B) Always supplement with latest research
-   - C) Student can request external sources
-
-   **Recommendation**: Option A primarily, with C as optional feature
+   Implementation: Agent monitors metrics and adjusts teaching depth/speed accordingly.
 
 ---
 
-### 3. **Quiz Difficulty Progression**
-   **Question**: How aggressive should adaptive difficulty be?
+### 2. **Web Search Scope** ✅
+   **Decision**: **Only when PDF insufficient**
 
-   **Options**:
-   - A) Conservative (3 correct → increase difficulty)
-   - B) Moderate (2 correct → increase)
-   - C) Aggressive (1 correct → increase)
+   Web search will be triggered:
+   - When student asks question not covered in PDF
+   - When PDF content lacks depth on specific topic
+   - Agent will always clearly cite source:
+     - "According to your textbook..." (PDF)
+     - "Based on external research..." (Web)
 
-   **Recommendation**: Option A for better learning experience
-
----
-
-### 4. **Session Length**
-   **Question**: Should the orchestrator enforce session time limits?
-
-   **Options**:
-   - A) No limits, student controls
-   - B) Suggest breaks after 30-45 min
-   - C) Enforce mandatory breaks
-
-   **Recommendation**: Option B - Gentle suggestions
+   Implementation: Tutor Agent checks Qdrant first, web search as fallback.
 
 ---
 
-### 5. **Multi-Modal Learning**
-   **Question**: Should we support images/diagrams from PDFs in Phase 1?
+### 3. **Quiz Difficulty Progression** ✅
+   **Decision**: **Moderate** (2 correct → increase difficulty)
 
-   **Options**:
-   - A) Yes, extract and display images
-   - B) No, text-only for Phase 1, add images later
-   - C) Extract images but don't process them yet
+   Adaptive logic:
+   - 2 consecutive correct answers → Increase difficulty
+   - 1 incorrect answer → Maintain current difficulty
+   - 2 consecutive incorrect → Decrease difficulty
+   - Provides balanced challenge without frustration
 
-   **Recommendation**: Option B for faster MVP
+   Implementation: Quiz Agent tracks recent performance and adjusts next question.
+
+---
+
+### 4. **Session Length** ✅
+   **Decision**: **Suggest breaks** after 30-45 minutes
+
+   Orchestrator behavior:
+   - Track session start time
+   - After 30-45 min, agent suggests: "You've been learning for 40 minutes! Great focus. Want to take a 5-minute break?"
+   - Student can accept or decline
+   - No forced interruptions
+
+   Implementation: Orchestrator monitors session duration, makes suggestions.
+
+---
+
+### 5. **Multi-Modal Learning** ✅
+   **Decision**: **Not in this phase** (text-only for Phase 1)
+
+   Phase 1 scope:
+   - Extract and process text from PDFs only
+   - Images/diagrams deferred to Phase 2+
+   - Faster MVP, focused on agentic behavior
+
+   Future enhancement: Add image extraction and multi-modal embeddings later.
+
+---
 
 ---
 
@@ -812,23 +818,56 @@ ORCHESTRATOR: [Decision: Student now understands, proceed with confidence]
 
 ---
 
-## Next Steps
+## Next Steps - Ready for Implementation! 🚀
 
-1. **Review & Discuss**:
-   - Is the agentic behavior well-defined?
-   - Are the agent responsibilities clear?
-   - Do the conversation examples match your vision?
-   - Any concerns about the multi-source knowledge approach?
+### ✅ Planning Phase Complete
 
-2. **Refine**:
-   - Answer open questions above
-   - Adjust agent behaviors if needed
-   - Clarify any ambiguous features
+All design decisions have been finalized:
+- ✅ Pacing: Auto-detect
+- ✅ Web Search: Only when PDF insufficient
+- ✅ Quiz Difficulty: Moderate (2 correct → increase)
+- ✅ Session Length: Suggest breaks after 30-45 min
+- ✅ Multi-Modal: Text-only for Phase 1
 
-3. **Approve & Build**:
-   - Finalize this plan
-   - Start Phase 1 implementation
-   - Build iteratively with testing
+### 🏗️ Implementation Plan
+
+**Start with Phase 2** (Phase 1 foundation already exists in dev branch):
+
+1. **Phase 2: PDF Processing & Vector Storage** (~3-4 days)
+   - Implement PDF text extraction
+   - Create chunking strategy
+   - Generate embeddings with OpenAI
+   - Store vectors in Qdrant
+   - Test semantic search
+
+2. **Phase 3: Tutor Agent with RAG** (~2-3 days)
+   - Build RAG-powered Tutor Agent
+   - Implement Qdrant search tools
+   - Add web search fallback
+   - Test teaching conversations
+
+3. **Phase 4: Quiz Agent & Assessment** (~2-3 days)
+   - Build Quiz Agent with adaptive difficulty
+   - Implement moderate progression logic
+   - Test assessment flows
+
+4. **Phase 5: Orchestrator Agent** (~2-3 days)
+   - Build session coordination
+   - Implement auto-pacing detection
+   - Add break suggestions
+   - Test complete learning flows
+
+5. **Phases 6-8: Integration & Polish** (~1-2 weeks)
+   - API endpoints
+   - Frontend integration
+   - Testing & refinement
+
+### 📋 Immediate Next Actions
+
+1. Verify OpenAI API key is configured
+2. Start Docker services (PostgreSQL + Qdrant)
+3. Begin Phase 2: PDF processing implementation
+4. Set up test PDF for validation
 
 ---
 
@@ -837,12 +876,13 @@ ORCHESTRATOR: [Decision: Student now understands, proceed with confidence]
 This refined plan transforms the AI tutor from a **reactive chatbot** into a **proactive teaching agent** that:
 
 ✅ Initiates and drives learning sessions
-✅ Teaches using RAG-powered content retrieval
-✅ Assesses understanding continuously
-✅ Adapts in real-time to student needs
+✅ Teaches using RAG-powered content retrieval (Qdrant)
+✅ Assesses understanding continuously with adaptive difficulty
+✅ Adapts in real-time to student needs (auto-pacing)
 ✅ Orchestrates multiple specialized agents
-✅ Supplements PDF content with web search when needed
+✅ Supplements PDF content with web search when needed (with clear sourcing)
 ✅ Maintains conversation context and memory
+✅ Suggests breaks for optimal learning (30-45 min)
 ✅ Provides a cohesive, teacher-like experience
 
-**Ready to discuss and refine further?**
+**Status**: ✅ Plan finalized, ready to build!
