@@ -1,99 +1,129 @@
 """
-Learning session routes.
-Manages learning flow via the Orchestrator Agent.
+Learning session routes - Orchestrator Agent integration.
 """
 
-from fastapi import APIRouter
-from agents import Runner
+from fastapi import APIRouter, HTTPException
 from src.agents.orchestrator import get_orchestrator_agent
-from src.models import (
-    SessionStartRequest,
-    OrchestrationDecision,
-    LearningSession,
-)
+from src.models import SessionStartRequest, OrchestrationDecision
+from pydantic import BaseModel
+import logging
+from datetime import datetime
 
-router = APIRouter(prefix="/learning", tags=["learning"])
+router = APIRouter(prefix="/api/learning", tags=["learning"])
+logger = logging.getLogger(__name__)
+
+
+class SessionResponse(BaseModel):
+    session_id: str
+    class_id: str
+    student_id: str
+    current_section_id: str | None
+    started_at: str
+    status: str
 
 
 @router.post("/session/start")
-async def start_learning_session(request: SessionStartRequest) -> OrchestrationDecision:
+async def start_learning_session(request: SessionStartRequest):
     """
     Start a new learning session.
-
+    
     The Orchestrator Agent will:
-    1. Get course structure
-    2. Check student progress
-    3. Decide what happens first (teach first section, etc)
-    4. Create a learning session
-    5. Return decision about what to do first
-
-    Args:
-        request: SessionStartRequest with class_id and student_id
-
-    Returns:
-        OrchestrationDecision with first action to take
+    1. Check student progress
+    2. Determine starting point
+    3. Initialize session state
+    4. Decide first action (teach/quiz/review)
     """
-    # TODO: Implement
-    # 1. Create learning session
-    # 2. Call Orchestrator Agent
-    # 3. Save session state
-    # 4. Return OrchestrationDecision
-    pass
+    try:
+        logger.info(f"Starting session for student {request.student_id} in class {request.class_id}")
+        
+        # TODO: Call Orchestrator Agent
+        # orchestrator = get_orchestrator_agent()
+        # decision = await orchestrator.run({
+        #     "class_id": request.class_id,
+        #     "student_id": request.student_id,
+        #     "current_action": "start"
+        # })
+        
+        # Mock response
+        session_id = f"session_{datetime.now().timestamp()}"
+        
+        return {
+            "success": True,
+            "session_id": session_id,
+            "class_id": request.class_id,
+            "student_id": request.student_id,
+            "current_section_id": "section_1",
+            "started_at": datetime.now().isoformat(),
+            "status": "active",
+            "next_action": {
+                "action": "teach",
+                "target": "section_1",
+                "reasoning": "Starting with first section",
+                "student_message": "Welcome! Let's begin with the first topic..."
+            },
+            "message": "Session started (agents require OpenAI key)"
+        }
+        
+    except Exception as e:
+        logger.error(f"Session start error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/session/{session_id}")
-async def get_session(session_id: str) -> LearningSession:
-    """
-    Retrieve a learning session.
-
-    Args:
-        session_id: Session identifier
-
-    Returns:
-        LearningSession with all metadata
-    """
-    # TODO: Implement
-    # Query database for session
-    pass
+@router.get("/session/{session_id}/state")
+async def get_session_state(session_id: str):
+    """Get current session state."""
+    # TODO: Implement session state retrieval
+    return {
+        "session_id": session_id,
+        "status": "active",
+        "message": "Session state (requires database)"
+    }
 
 
 @router.post("/session/{session_id}/next")
-async def get_next_action(session_id: str) -> OrchestrationDecision:
+async def session_next_action(session_id: str):
     """
-    Ask the Orchestrator what happens next in the learning session.
-
-    The Orchestrator Agent will:
-    1. Check current session state
-    2. Review student progress
-    3. Decide next action based on quiz scores, time spent, etc
-    4. Update session state
-
-    Args:
-        session_id: Session identifier
-
-    Returns:
-        OrchestrationDecision with next action
+    Get next action from Orchestrator based on current state.
+    
+    Uses auto-pacing to determine:
+    - Continue teaching
+    - Move to quiz
+    - Suggest break (30-45 min)
+    - Review material
+    - Next section
     """
-    # TODO: Implement
-    # 1. Get session and progress
-    # 2. Call Orchestrator Agent
-    # 3. Update session state
-    # 4. Return OrchestrationDecision
-    pass
+    try:
+        # TODO: Call Orchestrator Agent with session history
+        # orchestrator = get_orchestrator_agent()
+        # decision = await orchestrator.run({
+        #     "session_id": session_id,
+        #     "current_action": "decide_next"
+        # })
+        
+        return {
+            "success": True,
+            "decision": {
+                "action": "quiz",
+                "target": "current_section",
+                "reasoning": "Student engaged well, ready for assessment",
+                "student_message": "Great! Let's test your understanding..."
+            },
+            "message": "Next action (agents require OpenAI key)"
+        }
+        
+    except Exception as e:
+        logger.error(f"Next action error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/class/{class_id}/progress")
-async def get_class_progress(class_id: str, student_id: str) -> dict:
-    """
-    Get student's overall progress in a course.
-
-    Args:
-        class_id: Course identifier
-        student_id: Student identifier
-
-    Returns:
-        Dict with completion stats, scores, completed sections
-    """
-    # TODO: Implement
-    # Query database for progress
-    pass
+@router.get("/progress/{student_id}/{class_id}")
+async def get_student_progress(student_id: str, class_id: str):
+    """Get student progress in a class."""
+    # TODO: Implement progress retrieval
+    return {
+        "student_id": student_id,
+        "class_id": class_id,
+        "sections_completed": 0,
+        "total_sections": 0,
+        "message": "Progress tracking (requires database)"
+    }

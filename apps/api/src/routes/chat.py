@@ -1,55 +1,81 @@
 """
-Chat and tutoring routes.
-Sends messages to the Tutor Agent.
+Chat routes for Tutor Agent interaction.
 """
 
-from fastapi import APIRouter
-from agents import Runner
+from fastapi import APIRouter, HTTPException
 from src.agents.tutor import get_tutor_agent
 from src.models import ChatMessageRequest, TutorResponse
+from pydantic import BaseModel
+import logging
 
-router = APIRouter(prefix="/chat", tags=["chat"])
+router = APIRouter(prefix="/api/chat", tags=["chat"])
+logger = logging.getLogger(__name__)
 
 
-@router.post("/message")
-async def send_message(request: ChatMessageRequest) -> TutorResponse:
+class ChatRequest(BaseModel):
+    session_id: str
+    message: str
+    class_id: str
+    section_id: str | None = None
+
+
+@router.post("/message", response_model=dict)
+async def send_message(request: ChatRequest):
     """
-    Send a message to the tutor for the current section.
-
+    Send a message to the Tutor Agent.
+    
     The Tutor Agent will:
-    1. Understand what the student is asking
-    2. Search Qdrant for relevant course content (RAG)
-    3. Provide a clear explanation with examples
-    4. Ask follow-up questions to check understanding
-    5. Suggest next steps (continue, quiz, next_section)
-
-    Args:
-        request: ChatMessageRequest with session_id and message
-
-    Returns:
-        TutorResponse with explanation, examples, questions, and next action
+    1. Search Qdrant for relevant content (RAG)
+    2. Use web search if needed (fallback)
+    3. Generate explanation with examples
+    4. Provide follow-up questions
+    5. Suggest next action (continue/quiz/next_section)
     """
-    # TODO: Implement
-    # 1. Load learning session
-    # 2. Get chat history
-    # 3. Call Tutor Agent with student message
-    # 4. Save response to history
-    # 5. Return TutorResponse
-    pass
+    try:
+        logger.info(f"Chat message from session {request.session_id}: {request.message[:50]}...")
+        
+        # TODO: Call Tutor Agent
+        # tutor = get_tutor_agent()
+        # response = await tutor.run({
+        #     "session_id": request.session_id,
+        #     "message": request.message,
+        #     "class_id": request.class_id,
+        #     "section_id": request.section_id
+        # })
+        
+        # Mock response for now
+        mock_response = {
+            "explanation": f"Great question! Let me explain based on the course material...",
+            "examples": [
+                "Example 1 from your textbook...",
+                "Example 2 showing this concept..."
+            ],
+            "key_concepts": ["Main concept 1", "Main concept 2"],
+            "follow_up_questions": [
+                "Can you explain how this relates to...?",
+                "What do you think happens when...?"
+            ],
+            "depth_adjustment": "appropriate",
+            "next_action": "continue"
+        }
+        
+        return {
+            "success": True,
+            "response": mock_response,
+            "message": "Tutor agent response (agents require OpenAI key to run)"
+        }
+        
+    except Exception as e:
+        logger.error(f"Chat error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{session_id}/history")
-async def get_conversation_history(session_id: str, limit: int = 10) -> list:
-    """
-    Retrieve chat history for a session.
-
-    Args:
-        session_id: Learning session identifier
-        limit: Number of recent messages to return
-
-    Returns:
-        List of ChatMessage objects
-    """
-    # TODO: Implement
-    # Query database for conversation history
-    pass
+@router.get("/history/{session_id}")
+async def get_chat_history(session_id: str):
+    """Get chat history for a session."""
+    # TODO: Implement chat history retrieval
+    return {
+        "session_id": session_id,
+        "messages": [],
+        "message": "Chat history (requires database implementation)"
+    }
