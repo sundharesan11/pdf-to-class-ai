@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: eduagent-postgres
+    environment:
+      POSTGRES_USER: eduagent
+      POSTGRES_PASSWORD: eduagent_password
+      POSTGRES_DB: eduagent
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eduagent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eduagent-network
+
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: eduagent-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT_API_KEY: ""
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eduagent-network
+
+  # Python FastAPI Backend
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: eduagent-api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://eduagent:eduagent_password@postgres:5432/eduagent
+      QDRANT_URL: http://qdrant:6333
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      ENVIRONMENT: development
+      LOG_LEVEL: INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    networks:
+      - eduagent-network
+    volumes:
+      - ./apps/api/src:/app/src
+
+  # React Frontend (optional - use pnpm dev for development)
+  # web:
+  #   build:
+  #     context: ./apps/web
+  #     dockerfile: Dockerfile
+  #   container_name: eduagent-web
+  #   ports:
+  #     - "5173:5173"
+  #   networks:
+  #     - eduagent-network
+  #   depends_on:
+  #     - api
+
+volumes:
+  postgres_data:
+  qdrant_data:
+
+networks:
+  eduagent-network:
+    driver: bridge

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,47 +6,121 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  ArrowLeft, 
-  Users, 
-  BookOpen, 
-  TrendingUp, 
-  Settings as SettingsIcon,
-  Copy,
-  QrCode,
-  Share2,
-  Edit,
-  BarChart3,
-  CheckCircle2,
-  Clock,
-  Search,
-  MoreVertical
+import {
+ArrowLeft,
+Users,
+BookOpen,
+TrendingUp,
+Settings as SettingsIcon,
+Copy,
+QrCode,
+Share2,
+Edit,
+BarChart3,
+CheckCircle2,
+Clock,
+Search,
+MoreVertical,
+  Loader2
 } from "lucide-react";
-import { mockClasses, mockStudents } from "@/lib/mockData";
+import { classesApi } from "@/lib/api";
 import { StatCard } from "@/components/shared/StatCard";
 import { useToast } from "@/hooks/use-toast";
 
 const TeacherClassView = () => {
-  const { classId } = useParams();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState("");
-  
-  // Mock data - in real app, fetch based on classId
-  const classData = mockClasses[0];
-  const students = mockStudents;
+const { classId } = useParams();
+const navigate = useNavigate();
+const { toast } = useToast();
+const [searchQuery, setSearchQuery] = useState("");
+const [isLoading, setIsLoading] = useState(true);
+const [classData, setClassData] = useState<any>(null);
+const [students, setStudents] = useState<any[]>([]);
+
+// Fetch class data and students
+useEffect(() => {
+const fetchClassData = async () => {
+if (!classId) return;
+
+try {
+        setIsLoading(true);
+
+// Fetch class details
+        const classResponse = await classesApi.get(parseInt(classId));
+        setClassData(classResponse);
+
+        // Fetch students enrolled in this class
+        const studentsResponse = await classesApi.getStudents(parseInt(classId));
+        setStudents(studentsResponse || []);
+
+      } catch (error: any) {
+        console.error('Failed to fetch class data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load class data. Please try again.",
+          variant: "destructive",
+        });
+        navigate("/teacher/dashboard");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchClassData();
+  }, [classId, navigate, toast]);
 
   const copyJoinCode = () => {
-    navigator.clipboard.writeText(classData.joinCode);
-    toast({
-      title: "Copied!",
-      description: "Join code copied to clipboard",
-    });
+    if (classData?.joinCode) {
+      navigator.clipboard.writeText(classData.joinCode);
+      toast({
+        title: "Copied!",
+        description: "Join code copied to clipboard",
+      });
+    }
   };
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoading) {
+  return (
+  <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
+    <div className="text-center">
+    <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+  <p className="text-muted-foreground">Loading class details...</p>
+  </div>
+  </div>
+  );
+  }
+
+
+
+  // Temporarily bypass the check to see if data is there
+  if (isLoading) {
+    return (
+    <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
+  <div className="text-center">
+    <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+    <p className="text-muted-foreground">Loading class details...</p>
+    </div>
+    </div>
+    );
+  }
+
+  if (!classData) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Class not found.</p>
+          <Button onClick={() => navigate("/teacher/dashboard")} className="mt-4">
+            Back to Dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -77,25 +151,25 @@ const TeacherClassView = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-start justify-between">
             <div>
-              <Badge variant="secondary" className="mb-3 bg-white/20 text-white border-white/30">
-                {classData.subject}
-              </Badge>
-              <h1 className="text-4xl font-bold mb-2">{classData.title}</h1>
-              <p className="text-lg opacity-90">{classData.description}</p>
-              <div className="flex gap-4 mt-4">
-                <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  <span>{classData.students} students</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  <span>{classData.chapters.length} chapters</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  <span>{classData.completion}% avg progress</span>
-                </div>
-              </div>
+            <Badge variant="secondary" className="mb-3 bg-white/20 text-white border-white/30 capitalize">
+            {classData.difficulty}
+            </Badge>
+            <h1 className="text-4xl font-bold mb-2">{classData.title}</h1>
+            <p className="text-lg opacity-90">{classData.description || 'No description available'}</p>
+            <div className="flex gap-4 mt-4">
+            <div className="flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            <span>{students.length} students</span>
+            </div>
+            <div className="flex items-center gap-2">
+            <BookOpen className="w-5 h-5" />
+            <span>{classData.chapters?.length || 0} chapters</span>
+            </div>
+            <div className="flex items-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            <span>Published</span>
+            </div>
+            </div>
             </div>
           </div>
         </div>
@@ -115,28 +189,28 @@ const TeacherClassView = () => {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6 animate-fade-in">
             <div className="grid md:grid-cols-4 gap-6">
-              <StatCard title="Total Students" value={classData.students} icon={Users} />
-              <StatCard 
-                title="Completion Rate" 
-                value={`${classData.completion}%`} 
-                icon={TrendingUp} 
-                iconColor="text-accent" 
-                iconBg="bg-accent/10" 
-              />
-              <StatCard 
-                title="Avg Quiz Score" 
-                value="84%" 
-                icon={BarChart3} 
-                iconColor="text-secondary" 
-                iconBg="bg-secondary/10" 
-              />
-              <StatCard 
-                title="Active This Week" 
-                value={Math.floor(classData.students * 0.7)} 
-                icon={Clock} 
-                iconColor="text-primary" 
-                iconBg="bg-primary/10" 
-              />
+            <StatCard title="Total Students" value={students.length} icon={Users} />
+            <StatCard
+            title="Total Chapters"
+            value={classData.chapters?.length || 0}
+            icon={BookOpen}
+            iconColor="text-accent"
+            iconBg="bg-accent/10"
+            />
+            <StatCard
+            title="Total Sections"
+            value={classData.chapters?.reduce((sum: number, ch: any) => sum + (ch.sections?.length || 0), 0) || 0}
+            icon={BarChart3}
+            iconColor="text-secondary"
+            iconBg="bg-secondary/10"
+            />
+            <StatCard
+            title="Status"
+            value={classData.status === 'published' ? 'Published' : 'Draft'}
+            icon={Clock}
+            iconColor="text-primary"
+            iconBg="bg-primary/10"
+            />
             </div>
 
             {/* Join Code Card */}
@@ -198,33 +272,44 @@ const TeacherClassView = () => {
                 <CardDescription>Chapters and sections in this class</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {classData.chapters.map((chapter, idx) => (
-                  <div key={chapter.id} className="border border-border rounded-xl p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <span className="text-sm font-bold text-primary">{idx + 1}</span>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-foreground">{chapter.title}</h4>
-                          <p className="text-sm text-muted-foreground">{chapter.sections.length} sections</p>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <div className="pl-11 space-y-2">
-                      {chapter.sections.map((section) => (
-                        <div key={section.id} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg">
-                          <span className="text-sm text-foreground">{section.title}</span>
-                          <span className="text-xs text-muted-foreground">~{section.duration} min</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
+              {classData.chapters?.map((chapter: any, idx: number) => (
+              <div key={chapter.id} className="border border-border rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+              <span className="text-sm font-bold text-primary">{idx + 1}</span>
+              </div>
+              <div>
+              <h4 className="font-semibold text-foreground">{chapter.title}</h4>
+              <p className="text-sm text-muted-foreground">{chapter.sections?.length || 0} sections</p>
+                {chapter.summary && (
+                    <p className="text-sm text-muted-foreground mt-1">{chapter.summary}</p>
+                  )}
+              </div>
+              </div>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="w-4 h-4" />
+              </Button>
+              </div>
+              <div className="pl-11 space-y-2">
+              {chapter.sections?.map((section: any) => (
+              <div key={section.id} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg">
+                  <span className="text-sm text-foreground">{section.title}</span>
+                    <div className="flex items-center gap-2">
+                        {section.quizzes && section.quizzes.length > 0 && (
+                            <Badge variant="outline" className="text-xs">Quiz</Badge>
+                            )}
+                           </div>
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                 )) || (
+                   <div className="text-center py-8 text-muted-foreground">
+                     No chapters available
+                   </div>
+                 )}
+               </CardContent>
             </Card>
           </TabsContent>
 
@@ -252,33 +337,33 @@ const TeacherClassView = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {filteredStudents.map((student) => (
-                    <div key={student.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors">
-                      <div className="w-12 h-12 bg-gradient-hero rounded-full flex items-center justify-center text-white font-bold">
-                        {student.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-foreground">{student.name}</p>
-                        <p className="text-sm text-muted-foreground">{student.email}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-foreground">{student.overallProgress}% Complete</p>
-                        <p className="text-xs text-muted-foreground">
-                          {student.sectionsCompleted}/{student.totalSections} sections
-                        </p>
-                      </div>
-                      <div className="w-24">
-                        <Progress value={student.overallProgress} className="h-2" />
-                      </div>
-                      <Badge variant={
-                        student.status === 'Active' ? 'default' : 
-                        student.status === 'Struggling' ? 'destructive' : 
-                        'secondary'
-                      }>
-                        {student.status}
-                      </Badge>
-                    </div>
-                  ))}
+                {filteredStudents.length > 0 ? filteredStudents.map((student) => (
+                <div key={student.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors">
+                <div className="w-12 h-12 bg-gradient-hero rounded-full flex items-center justify-center text-white font-bold">
+                {student.user?.name?.split(' ').map((n: string) => n[0]).join('') || '?'}
+                </div>
+                <div className="flex-1">
+                <p className="font-semibold text-foreground">{student.user?.name || 'Unknown Student'}</p>
+                <p className="text-sm text-muted-foreground">{student.user?.email || 'No email'}</p>
+                </div>
+                <div className="text-right">
+                <p className="text-sm font-medium text-foreground">{student.progressPercent || 0}% Complete</p>
+                <p className="text-xs text-muted-foreground">
+                Joined {new Date(student.joinedAt).toLocaleDateString()}
+                </p>
+                </div>
+                <div className="w-24">
+                <Progress value={student.progressPercent || 0} className="h-2" />
+                </div>
+                <Badge variant="default">
+                Active
+                </Badge>
+                </div>
+                )) : (
+                <div className="text-center py-8 text-muted-foreground">
+                No students enrolled yet
+                </div>
+                )}
                 </div>
               </CardContent>
             </Card>
